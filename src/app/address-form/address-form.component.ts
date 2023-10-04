@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -7,11 +7,14 @@ import { FormsModule } from '@angular/forms';
   imports: [FormsModule],
   template: `
     <h3>Address Form</h3>
-    <form>
+    <form #addressForm="ngForm">
       <div>
         <label for="street1">
           <span>Street 1: </span>
-          <input id="street1" name="street1" />
+          <input id="street1" name="street1" 
+            [ngModel]="streetOne"
+            (ngModelChange)="streetOne.emit($event)"
+          />
         </label>
       </div>
       <div>
@@ -46,5 +49,29 @@ import { FormsModule } from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddressFormComponent {
+  @Input()
+  streetOne = '';
 
+  @Output()
+  streetOneChange = new EventEmitter<string>();
+
+  @Input()
+  streetTwo = '';
+
+  @Output()
+  streetTwoChange = new EventEmitter<string>();
+
+  @Input()
+  city = '';
+
+  @Output()
+  cityChange = new EventEmitter<string>();
+
+  @Input()
+  country = '';
+
+  @Output()
+  countryChange = new EventEmitter<string>();
+
+  isAddressFormValid = false;
 }
