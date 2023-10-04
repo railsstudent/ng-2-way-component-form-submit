@@ -11,9 +11,9 @@ import { FormsModule } from '@angular/forms';
       <div>
         <label for="street1">
           <span>Street 1: </span>
-          <input id="street1" name="street1" 
+          <input id="street1" name="street1"
             [ngModel]="streetOne"
-            (ngModelChange)="streetOne.emit($event)"
+            (ngModelChange)="updateField($event, 'streetOne', addressForm.valid)"
           />
         </label>
       </div>
@@ -73,5 +73,14 @@ export class AddressFormComponent {
   @Output()
   countryChange = new EventEmitter<string>();
 
-  isAddressFormValid = false;
+  isAddressFormValid = new EventEmitter<boolean>();
+
+  updateField(value: string, fieldName: string, isValid: boolean | null) {
+    if (fieldName === 'streetOne') {
+      this.streetOneChange.emit(value);
+    }
+
+    const isFormValid = isValid === null ? false : isValid;
+    this.isAddressFormValid.emit(isFormValid);
+  }
 }
