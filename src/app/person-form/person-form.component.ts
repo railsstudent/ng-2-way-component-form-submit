@@ -7,40 +7,34 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [JsonPipe, FormsModule, NgIf],
   template: `
+    <h3>Person Form</h3>
     <form #personForm="ngForm">
       <div>
         <label for="firstName">
           <span>First name: </span>
           <input id="firstName" name="firstName"
-          [ngModel]="firstName"
-          (ngModelChange)="updateFirstName($event, personForm.valid)" required
-          #firstNameControl="ngModel"
+            [ngModel]="firstName"
+            (ngModelChange)="updateFirstName($event, personForm.valid)" required
+            #firstNameControl="ngModel"
            />
-          <span class="error" *ngIf="firstNameControl.errors?.required && firstNameControl.dirty">First name is required</span>
+          <span class="error" *ngIf="firstNameControl.errors?.['required'] && firstNameControl.dirty">First name is required</span>
         </label>
       </div>
       <div>
         <label for="lastName">
           <span>Last name: </span>
           <input id="lastName" name="lastName"
-          [ngModel]="lastName" (ngModelChange)="updateLastName($event, personForm.valid)"
-          #lastNameControl="ngModel"
-          required  />
-          <span class="error" *ngIf="lastNameControl.errors?.required && lastNameControl.dirty">Last name is required</span>
+            [ngModel]="lastName" (ngModelChange)="updateLastName($event, personForm.valid)" required
+            #lastNameControl="ngModel"
+          />
+          <span class="error" *ngIf="lastNameControl.errors?.['required'] && lastNameControl.dirty">Last name is required</span>
         </label>
       </div>
     </form>
-    <pre>
-      {{ personForm.valid }}
-    </pre>
   `,
   styles: [`
     :host {
       display: block;
-    }
-
-    .error {
-      color: red;
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,11 +53,11 @@ export class PersonFormComponent {
   lastNameChange = new EventEmitter<string>();
   
   @Output()
-  formValid = new EventEmitter<boolean>();
+  isFormValid = new EventEmitter<boolean>();
 
   updateFormValid(isValid: boolean | null) {
     const isFormValid = isValid ? isValid : false;
-    this.formValid.emit(isFormValid);
+    this.isFormValid.emit(isFormValid);
   }
 
   updateFirstName(value: string, isValid: boolean | null) {
