@@ -1,53 +1,21 @@
-import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormFieldComponent } from '../form-field/form-field.component';
 import { AddressForm } from './interfaces/address-form.interface';
 
 @Component({
   selector: 'app-address-form',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf],
+  imports: [FormFieldComponent],
   template: `
     <h3>Address Form</h3>
-    <form [formGroup]="form">
-      <div>
-        <label for="streetOne">
-          <span>Street 1: </span>
-          <input id="streetOne" name="streetOne" required formControlName="streetOne" />
-        </label>
-        <span class="error" *ngIf="form.controls.streetOne.errors?.['required'] && form.controls.streetOne.dirty">
-          Street 1 is required
-        </span>
-      </div>
-      <div>
-        <label for="streetTwo">
-          <span>Street 2: </span>
-          <input id="streetTwo" name="streetTwo" required formControlName="streetTwo" />
-        </label>
-        <span class="error" *ngIf="form.controls.streetTwo.errors?.['required'] && form.controls.streetTwo.dirty">
-          Street 2 is required
-        </span>
-      </div>
-      <div>
-        <label for="city">
-          <span>City: </span>
-          <input id="city" name="city" required formControlName="city" />
-        </label>
-        <span class="error" *ngIf="form.controls.city.errors?.['required'] && form.controls.city.dirty">
-          City is required
-        </span>
-      </div>
-      <div>
-        <label for="country">
-          <span>Country: </span>
-          <input id="country" name="country" required formControlName="country" />
-        </label>
-        <span class="error" *ngIf="form.controls.country.errors?.['required'] && form.controls.country.dirty">
-          Country is required
-        </span>
-      </div>
-    </form>
+    <div class="form">
+      <app-form-field key='streetOne' label="Street 1: " [errors]="errors['streetOne']" [form]="form" />
+      <app-form-field key='streetTwo' label="Street 2: " [errors]="errors['streetTwo']" [form]="form" />
+      <app-form-field key='city' label="City: " [errors]="errors['city']" [form]="form" />
+      <app-form-field key='country' label="Country: " [errors]="errors['country']" [form]="form" />
+    </div>
   `,
   styles: [`
     :host {
@@ -70,11 +38,18 @@ export class AddressFormComponent {
   @Output()
   isAddressFormValid = new EventEmitter<boolean>();
 
+  errors = {
+    streetOne: [{ key: 'required', message: 'Street 1 is required' }],
+    streetTwo: [{ key: 'required', message: 'Street 2 is required' }],
+    city: [{ key: 'required', message: 'city is required' }],
+    country: [{ key: 'required', message: 'country is required' }]
+  };
+
   form = new FormGroup({
-    streetOne: new FormControl('', { nonNullable: true }),
-    streetTwo: new FormControl('', { nonNullable: true }),
-    city: new FormControl('', { nonNullable: true }),
-    country: new FormControl('', { nonNullable: true }),
+    streetOne: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    streetTwo: new FormControl('', { nonNullable: true, validators: [Validators.required]}),
+    city: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    country: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   });
 
   constructor() {

@@ -1,35 +1,19 @@
-import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormFieldComponent } from '../form-field/form-field.component';
 import { UserForm } from './interfaces/user-form.interface';
 
 @Component({
   selector: 'app-person-form',
   standalone: true,
-  imports: [NgIf, ReactiveFormsModule],
+  imports: [FormFieldComponent],
   template: `
     <h3>Person Form</h3>
-    <form [formGroup]="form">
-      <div>
-        <label for="firstName">
-          <span>First name: </span>
-          <input id="firstName" name="firstName" formControlName="firstName" />
-          <span class="error" *ngIf="form.controls.firstName.errors?.['required'] && form.controls.firstName.dirty">
-            First name is required
-          </span>
-        </label>
-      </div>
-      <div>
-        <label for="lastName">
-          <span>Last name: </span>
-          <input id="lastName" name="lastName" formControlName="lastName" />
-          <span class="error" *ngIf="form.controls.lastName.errors?.['required'] && form.controls.lastName.dirty">
-            Last name is required
-          </span>
-        </label>
-      </div>
-    </form>
+    <div class="form">
+      <app-form-field key='firstName' label="First name: " [errors]="errors['firstName']" [form]="form" />
+      <app-form-field key='lastName' label="Last name: " [errors]="errors['lastName']" [form]="form" />
+    </div>
   `,
   styles: [`
     :host {
@@ -49,9 +33,14 @@ export class PersonFormComponent {
   isPersonFormValid = new EventEmitter<boolean>();
 
   form = new FormGroup({
-    firstName: new FormControl('', { nonNullable: true }),
-    lastName: new FormControl('', { nonNullable: true }),
+    firstName: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    lastName: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   })
+
+  errors = {
+    firstName: [{ key: 'required', message: 'First name is required' }],
+    lastName: [{ key: 'required', message: 'Last name is required' }]
+  };
 
   constructor() {
     this.form.valueChanges
