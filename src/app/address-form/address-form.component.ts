@@ -38,7 +38,7 @@ import { FormsModule } from '@angular/forms';
       <div>
         <label for="city">
           <span>City: </span>
-          <input id="city" name="city" 
+          <input id="city" name="city" required 
             [ngModel]="city"
             (ngModelChange)="emitValue($event, 'city', addressForm.valid)"
             #cityControl="ngModel"
@@ -51,7 +51,7 @@ import { FormsModule } from '@angular/forms';
       <div>
         <label for="country">
           <span>Country: </span>
-          <input id="country" name="country" 
+          <input id="country" name="country" required
             [ngModel]="country"
             (ngModelChange)="emitValue($event, 'country', addressForm.valid)"
             #countryControl="ngModel"

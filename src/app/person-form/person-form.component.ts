@@ -1,11 +1,11 @@
+import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule, JsonPipe, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-person-form',
   standalone: true,
-  imports: [JsonPipe, FormsModule, NgIf],
+  imports: [FormsModule, NgIf],
   template: `
     <h3>Person Form</h3>
     <form #personForm="ngForm">
@@ -26,7 +26,8 @@ import { FormsModule } from '@angular/forms';
         <label for="lastName">
           <span>Last name: </span>
           <input id="lastName" name="lastName"
-            [ngModel]="lastName" (ngModelChange)="emitValue($event, 'lastName', personForm.valid)" required
+            [ngModel]="lastName" 
+            (ngModelChange)="emitValue($event, 'lastName', personForm.valid)" required
             #lastNameControl="ngModel"
           />
           <span class="error" *ngIf="lastNameControl.errors?.['required'] && lastNameControl.dirty">

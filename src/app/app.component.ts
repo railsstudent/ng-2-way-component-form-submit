@@ -1,33 +1,46 @@
+import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AddressFormComponent } from './address-form/address-form.component';
 import { PersonFormComponent } from './person-form/person-form.component';
-import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [JsonPipe, AddressFormComponent, PersonFormComponent, FormsModule],
   template: `
-    <h2>2-way component binding form submit</h2>
-    <form (ngSubmit)="submitTypedForm($event)">
+    <h2>2-way binding to build complex form</h2>
+    <form (ngSubmit)="handleSubmit()">
       <app-person-form 
         [(firstName)]="userForm.firstName" 
         [(lastName)]="userForm.lastName" 
-        (isFormValid)="isPersonFormValid = $event"
+        (isPersonFormValid)="isChildPersonFormValid = $event"
       />
-      <app-address-form />
-      <button type="submit" [disabled]="true">Submit</button>
+      <app-address-form
+        [(streetOne)]="addressForm.streetOne" 
+        [(streetTwo)]="addressForm.streetTwo"
+        [(city)]="addressForm.city"
+        [(country)]="addressForm.country" 
+        (isAddressFormValid)="isChildAddressFormValid = $event"
+      />
+      <button type="submit" [disabled]="!isChildPersonFormValid || !isChildAddressFormValid">Submit</button>
     </form>
-    <p>Reactive Form:</p>
+    <p>User Form:</p>
     <pre>
       {{ userForm | json }}
-      {{ isPersonFormValid | json }}
+    </pre>
+    <p>Address Form:</p>
+    <pre>
+      {{ addressForm | json }}
     </pre>
   `,
   styles: [`
     :host {
       display: block;
+    }
+
+    button {
+      padding: 0.25rem;
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -38,12 +51,23 @@ export class AppComponent {
     lastName: '',
   };
 
-  isPersonFormValid = false;
+  addressForm = {
+    streetOne: '',
+    streetTwo: '',
+    city: '',
+    country: '',
+  };
+
+  isChildPersonFormValid = false;
+  isChildAddressFormValid = false;
   
-  submitTypedForm(event: Event) {
-    console.log('event', event.target);
-    // event.preventDefault();
-    // alert(JSON.stringify(this.myForm.value));
-    console.log('submitTypedForm called');
+  handleSubmit() {
+    const submittedData = {
+      ...this.userForm,
+      ...this.addressForm,
+    }
+
+    alert(JSON.stringify(submittedData));
+    console.log('handleSubmit called');
   }
 }
