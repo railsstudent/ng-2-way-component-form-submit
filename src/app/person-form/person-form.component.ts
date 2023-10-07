@@ -14,20 +14,24 @@ import { FormsModule } from '@angular/forms';
           <span>First name: </span>
           <input id="firstName" name="firstName"
             [ngModel]="firstName"
-            (ngModelChange)="updateFirstName($event, personForm.valid)" required
+            (ngModelChange)="emitValue($event, 'firstName', personForm.valid)" required
             #firstNameControl="ngModel"
            />
-          <span class="error" *ngIf="firstNameControl.errors?.['required'] && firstNameControl.dirty">First name is required</span>
+          <span class="error" *ngIf="firstNameControl.errors?.['required'] && firstNameControl.dirty">
+            First name is required
+          </span>
         </label>
       </div>
       <div>
         <label for="lastName">
           <span>Last name: </span>
           <input id="lastName" name="lastName"
-            [ngModel]="lastName" (ngModelChange)="updateLastName($event, personForm.valid)" required
+            [ngModel]="lastName" (ngModelChange)="emitValue($event, 'lastName', personForm.valid)" required
             #lastNameControl="ngModel"
           />
-          <span class="error" *ngIf="lastNameControl.errors?.['required'] && lastNameControl.dirty">Last name is required</span>
+          <span class="error" *ngIf="lastNameControl.errors?.['required'] && lastNameControl.dirty">
+            Last name is required
+          </span>
         </label>
       </div>
     </form>
@@ -53,20 +57,16 @@ export class PersonFormComponent {
   lastNameChange = new EventEmitter<string>();
   
   @Output()
-  isFormValid = new EventEmitter<boolean>();
+  isPersonFormValid = new EventEmitter<boolean>();
 
-  updateFormValid(isValid: boolean | null) {
-    const isFormValid = isValid ? isValid : false;
-    this.isFormValid.emit(isFormValid);
-  }
+  emitValue(value: string, key: string, isValid: boolean | null) {
+    if (key === 'firstName') {
+      this.firstNameChange.emit(value);
+    } else if (key === 'lastName') {
+      this.lastNameChange.emit(value);
+    }
 
-  updateFirstName(value: string, isValid: boolean | null) {
-    this.firstNameChange.emit(value);
-    this.updateFormValid(isValid);
-  }
-
-  updateLastName(value: string, isValid: boolean | null) {
-    this.lastNameChange.emit(value);
-    this.updateFormValid(isValid);
+    const isFormValid = isValid === null ? false : isValid;
+    this.isPersonFormValid.emit(isFormValid);
   }
 }
