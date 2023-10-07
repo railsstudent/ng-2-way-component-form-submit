@@ -12,7 +12,7 @@ import { UserForm } from './interfaces/user-form.interface';
   template: `
     <h3>Person Form</h3>
     <div class="form" [formGroup]="form">
-      <app-form-field *ngFor="let key of keys" [key]="key" [label]="configs[key].label" [errors]="configs[key].errors" />
+      <app-form-field *ngFor="let key of keys" [key]="key" [config]="configs[key]" />
     </div>
   `,
   styles: [`
