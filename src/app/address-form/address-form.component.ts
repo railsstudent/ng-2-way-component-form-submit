@@ -1,3 +1,4 @@
+import { NgFor } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -7,14 +8,11 @@ import { AddressForm } from './interfaces/address-form.interface';
 @Component({
   selector: 'app-address-form',
   standalone: true,
-  imports: [FormFieldComponent],
+  imports: [FormFieldComponent, NgFor],
   template: `
     <h3>Address Form</h3>
     <div class="form">
-      <app-form-field key='streetOne' label="Street 1: " [errors]="errors['streetOne']" [form]="form" />
-      <app-form-field key='streetTwo' label="Street 2: " [errors]="errors['streetTwo']" [form]="form" />
-      <app-form-field key='city' label="City: " [errors]="errors['city']" [form]="form" />
-      <app-form-field key='country' label="Country: " [errors]="errors['country']" [form]="form" />
+      <app-form-field *ngFor="let key of keys" [key]="key" [label]="configs[key].label" [errors]="configs[key].errors" [form]="form" />
     </div>
   `,
   styles: [`
@@ -38,12 +36,26 @@ export class AddressFormComponent {
   @Output()
   isAddressFormValid = new EventEmitter<boolean>();
 
-  errors = {
-    streetOne: [{ key: 'required', message: 'Street 1 is required' }],
-    streetTwo: [{ key: 'required', message: 'Street 2 is required' }],
-    city: [{ key: 'required', message: 'city is required' }],
-    country: [{ key: 'required', message: 'country is required' }]
-  };
+  configs: Record<string, any> = {
+    streetOne: {
+      label: "Street 1: ",
+      errors: [{ key: 'required', message: 'Street 1 is required' }],
+    },
+    streetTwo: {
+      label: "Street 2: ",
+      errors: [{ key: 'required', message: 'Street 2 is required' }],
+    },
+    city: {
+      label: "City: ",
+      errors: [{ key: 'required', message: 'City is required' }],
+    },
+    country: {
+      label: "Country: ",
+      errors: [{ key: 'required', message: 'Country is required' }],
+    }
+  }
+
+  keys = Object.keys(this.configs);
 
   form = new FormGroup({
     streetOne: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
