@@ -1,9 +1,11 @@
 import { JsonPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AddressFormComponent } from './address-form/address-form.component';
-import { PersonFormComponent } from './person-form/person-form.component';
 import { Title } from '@angular/platform-browser';
+import { AddressFormComponent } from './address-form/address-form.component';
+import { AddressForm } from './address-form/interfaces/address-form.interface';
+import { UserForm } from './person-form/interfaces/user-form.interface';
+import { PersonFormComponent } from './person-form/person-form.component';
 
 @Component({
   selector: 'app-root',
@@ -13,18 +15,16 @@ import { Title } from '@angular/platform-browser';
     <h2>2-way data binding to build complex form</h2>
     <form (ngSubmit)="handleSubmit()">
       <app-person-form 
-        [(firstName)]="userForm.firstName" 
-        [(lastName)]="userForm.lastName" 
+        [(userForm)]="userForm" 
         (isPersonFormValid)="isChildPersonFormValid = $event"
       />
       <app-address-form
-        [(streetOne)]="addressForm.streetOne" 
-        [(streetTwo)]="addressForm.streetTwo"
-        [(city)]="addressForm.city"
-        [(country)]="addressForm.country" 
+        [(addressForm)]="addressForm" 
         (isAddressFormValid)="isChildAddressFormValid = $event"
       />
-      <button type="submit" [disabled]="!isChildPersonFormValid || !isChildAddressFormValid">Submit</button>
+      <button type="submit" [disabled]="!isChildPersonFormValid || !isChildAddressFormValid">
+        Submit
+      </button>
     </form>
     <p>User Form:</p>
     <pre>
@@ -47,12 +47,12 @@ import { Title } from '@angular/platform-browser';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
-  userForm = {
+  userForm: UserForm = {
     firstName: '',
     lastName: '',
   };
 
-  addressForm = {
+  addressForm: AddressForm = {
     streetOne: '',
     streetTwo: '',
     city: '',
@@ -61,7 +61,7 @@ export class AppComponent {
 
   isChildPersonFormValid = false;
   isChildAddressFormValid = false;
-  
+
   constructor(titleService: Title) {
     titleService.setTitle('2-way data binding to build complex form');
   }

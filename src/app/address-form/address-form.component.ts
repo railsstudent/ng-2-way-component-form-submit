@@ -1,63 +1,49 @@
 import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { AddressForm } from './interfaces/address-form.interface';
 
 @Component({
   selector: 'app-address-form',
   standalone: true,
-  imports: [FormsModule, NgIf],
+  imports: [ReactiveFormsModule, NgIf],
   template: `
     <h3>Address Form</h3>
-    <form #addressForm="ngForm">
+    <form [formGroup]="form">
       <div>
-        <label for="street1">
+        <label for="streetOne">
           <span>Street 1: </span>
-          <input id="street1" name="street1" required
-            [ngModel]="streetOne"
-            (ngModelChange)="emitValue($event, 'streetOne', addressForm.valid)"
-            #streetOneControl="ngModel"
-          />
+          <input id="streetOne" name="streetOne" required formControlName="streetOne" />
         </label>
-        <span class="error" *ngIf="streetOneControl.errors?.['required'] && streetOneControl.dirty">
+        <span class="error" *ngIf="form.controls.streetOne.errors?.['required'] && form.controls.streetOne.dirty">
           Street 1 is required
         </span>
       </div>
       <div>
-        <label for="street2">
+        <label for="streetTwo">
           <span>Street 2: </span>
-          <input id="street2" name="street2" required 
-            [ngModel]="streetTwo"
-            (ngModelChange)="emitValue($event, 'streetTwo', addressForm.valid)"
-            #streetTwoControl="ngModel"
-          />
+          <input id="streetTwo" name="streetTwo" required formControlName="streetTwo" />
         </label>
-        <span class="error" *ngIf="streetTwoControl.errors?.['required'] && streetTwoControl.dirty">
+        <span class="error" *ngIf="form.controls.streetTwo.errors?.['required'] && form.controls.streetTwo.dirty">
           Street 2 is required
         </span>
       </div>
       <div>
         <label for="city">
           <span>City: </span>
-          <input id="city" name="city" required 
-            [ngModel]="city"
-            (ngModelChange)="emitValue($event, 'city', addressForm.valid)"
-            #cityControl="ngModel"
-          />
+          <input id="city" name="city" required formControlName="city" />
         </label>
-        <span class="error" *ngIf="cityControl.errors?.['required'] && cityControl.dirty">
+        <span class="error" *ngIf="form.controls.city.errors?.['required'] && form.controls.city.dirty">
           City is required
         </span>
       </div>
       <div>
         <label for="country">
           <span>Country: </span>
-          <input id="country" name="country" required
-            [ngModel]="country"
-            (ngModelChange)="emitValue($event, 'country', addressForm.valid)"
-            #countryControl="ngModel"
-          />
+          <input id="country" name="country" required formControlName="country" />
         </label>
-        <span class="error" *ngIf="countryControl.errors?.['required'] && countryControl.dirty">
+        <span class="error" *ngIf="form.controls.country.errors?.['required'] && form.controls.country.dirty">
           Country is required
         </span>
       </div>
@@ -76,44 +62,33 @@ import { FormsModule } from '@angular/forms';
 })
 export class AddressFormComponent {
   @Input()
-  streetOne = '';
+  addressForm!: AddressForm;
 
   @Output()
-  streetOneChange = new EventEmitter<string>();
-
-  @Input()
-  streetTwo = '';
-
-  @Output()
-  streetTwoChange = new EventEmitter<string>();
-
-  @Input()
-  city = '';
-
-  @Output()
-  cityChange = new EventEmitter<string>();
-
-  @Input()
-  country = '';
-
-  @Output()
-  countryChange = new EventEmitter<string>();
+  addressFormChange = new EventEmitter<AddressForm>();
 
   @Output()
   isAddressFormValid = new EventEmitter<boolean>();
 
-  emitValue(value: string, key: string, isValid: boolean | null) {
-    if (key === 'streetOne') {
-      this.streetOneChange.emit(value);
-    } else if (key === 'streetTwo') {
-      this.streetTwoChange.emit(value);
-    } else if (key === 'city') {
-      this.cityChange.emit(value);
-    } else if (key === 'country') {
-      this.countryChange.emit(value);
-    }
+  form = new FormGroup({
+    streetOne: new FormControl('', { nonNullable: true }),
+    streetTwo: new FormControl('', { nonNullable: true }),
+    city: new FormControl('', { nonNullable: true }),
+    country: new FormControl('', { nonNullable: true }),
+  });
 
-    const isFormValid = isValid === null ? false : isValid;
-    this.isAddressFormValid.emit(isFormValid);
+  constructor() {
+    this.form.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((values) => {
+        this.addressForm = {
+          streetOne: values.streetOne || '',
+          streetTwo: values.streetTwo || '',
+          city: values.city || '',
+          country: values.country || '',
+        };
+        this.addressFormChange.emit(this.addressForm);
+        this.isAddressFormValid.emit(this.form.valid);
+      });
   }
 }

@@ -1,23 +1,21 @@
 import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { UserForm } from './interfaces/user-form.interface';
 
 @Component({
   selector: 'app-person-form',
   standalone: true,
-  imports: [FormsModule, NgIf],
+  imports: [NgIf, ReactiveFormsModule],
   template: `
     <h3>Person Form</h3>
-    <form #personForm="ngForm">
+    <form [formGroup]="form">
       <div>
         <label for="firstName">
           <span>First name: </span>
-          <input id="firstName" name="firstName"
-            [ngModel]="firstName"
-            (ngModelChange)="emitValue($event, 'firstName', personForm.valid)" required
-            #firstNameControl="ngModel"
-           />
-          <span class="error" *ngIf="firstNameControl.errors?.['required'] && firstNameControl.dirty">
+          <input id="firstName" name="firstName" formControlName="firstName" />
+          <span class="error" *ngIf="form.controls.firstName.errors?.['required'] && form.controls.firstName.dirty">
             First name is required
           </span>
         </label>
@@ -25,12 +23,8 @@ import { FormsModule } from '@angular/forms';
       <div>
         <label for="lastName">
           <span>Last name: </span>
-          <input id="lastName" name="lastName"
-            [ngModel]="lastName" 
-            (ngModelChange)="emitValue($event, 'lastName', personForm.valid)" required
-            #lastNameControl="ngModel"
-          />
-          <span class="error" *ngIf="lastNameControl.errors?.['required'] && lastNameControl.dirty">
+          <input id="lastName" name="lastName" formControlName="lastName" />
+          <span class="error" *ngIf="form.controls.lastName.errors?.['required'] && form.controls.lastName.dirty">
             Last name is required
           </span>
         </label>
@@ -44,30 +38,31 @@ import { FormsModule } from '@angular/forms';
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PersonFormComponent {
+export class PersonFormComponent {  
   @Input()
-  firstName = '';
+  userForm!: UserForm;
 
   @Output()
-  firstNameChange = new EventEmitter<string>();
-  
-  @Input()
-  lastName = '';
+  userFormChange = new EventEmitter<UserForm>();
 
-  @Output()
-  lastNameChange = new EventEmitter<string>();
-  
   @Output()
   isPersonFormValid = new EventEmitter<boolean>();
 
-  emitValue(value: string, key: string, isValid: boolean | null) {
-    if (key === 'firstName') {
-      this.firstNameChange.emit(value);
-    } else if (key === 'lastName') {
-      this.lastNameChange.emit(value);
-    }
+  form = new FormGroup({
+    firstName: new FormControl('', { nonNullable: true }),
+    lastName: new FormControl('', { nonNullable: true }),
+  })
 
-    const isFormValid = isValid === null ? false : isValid;
-    this.isPersonFormValid.emit(isFormValid);
+  constructor() {
+    this.form.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((values) => {
+        this.userForm = {
+          firstName: values.firstName || '',
+          lastName: values.lastName || '',
+        };
+        this.userFormChange.emit(this.userForm);
+        this.isPersonFormValid.emit(this.form.valid);
+      });
   }
 }
