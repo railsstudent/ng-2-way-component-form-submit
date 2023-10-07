@@ -1,15 +1,16 @@
 import { JsonPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AddressFormComponent } from './address-form/address-form.component';
 import { PersonFormComponent } from './person-form/person-form.component';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [JsonPipe, AddressFormComponent, PersonFormComponent, FormsModule],
   template: `
-    <h2>2-way binding to build complex form</h2>
+    <h2>2-way data binding to build complex form</h2>
     <form (ngSubmit)="handleSubmit()">
       <app-person-form 
         [(firstName)]="userForm.firstName" 
@@ -60,6 +61,10 @@ export class AppComponent {
 
   isChildPersonFormValid = false;
   isChildAddressFormValid = false;
+  
+  constructor(titleService: Title) {
+    titleService.setTitle('2-way data binding to build complex form');
+  }
   
   handleSubmit() {
     const submittedData = {
