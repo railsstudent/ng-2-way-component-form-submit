@@ -1,3 +1,4 @@
+import { NgFor } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -7,12 +8,11 @@ import { UserForm } from './interfaces/user-form.interface';
 @Component({
   selector: 'app-person-form',
   standalone: true,
-  imports: [FormFieldComponent],
+  imports: [FormFieldComponent, NgFor],
   template: `
     <h3>Person Form</h3>
     <div class="form">
-      <app-form-field key='firstName' label="First name: " [errors]="errors['firstName']" [form]="form" />
-      <app-form-field key='lastName' label="Last name: " [errors]="errors['lastName']" [form]="form" />
+      <app-form-field *ngFor="let key of keys" [key]="key" [label]="configs[key].label" [errors]="configs[key].errors" [form]="form" />
     </div>
   `,
   styles: [`
@@ -37,10 +37,18 @@ export class PersonFormComponent {
     lastName: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   })
 
-  errors = {
-    firstName: [{ key: 'required', message: 'First name is required' }],
-    lastName: [{ key: 'required', message: 'Last name is required' }]
-  };
+  configs: Record<string, any> = {
+    firstName: {
+      label: "First Name: ",
+      errors: [{ key: 'required', message: 'First name is required' }],
+    },
+    lastName: {
+      label: "Last Name: ",
+      errors: [{ key: 'required', message: 'Last name is required' }],
+    },
+  }
+
+  keys = Object.keys(this.configs);
 
   constructor() {
     this.form.valueChanges
