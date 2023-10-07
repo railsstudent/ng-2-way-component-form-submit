@@ -1,6 +1,6 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, Input } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, Input, inject } from '@angular/core';
+import { FormGroup, FormGroupDirective, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-form-field',
@@ -21,15 +21,14 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
   `
 })
 export class FormFieldComponent {
+  form = inject(FormGroupDirective).form;
+
   @Input({ required: true })
   key!: string;
 
   @Input({ required: true })
   label!: string;
 
-  @Input({ required: true })
-  form!: FormGroup;
-  
   @Input()
   errors?: { key: string, message: string }[];
 }

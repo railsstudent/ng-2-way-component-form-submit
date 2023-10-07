@@ -1,18 +1,18 @@
 import { NgFor } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormFieldComponent } from '../form-field/form-field.component';
 import { UserForm } from './interfaces/user-form.interface';
 
 @Component({
   selector: 'app-person-form',
   standalone: true,
-  imports: [FormFieldComponent, NgFor],
+  imports: [FormFieldComponent, NgFor, ReactiveFormsModule],
   template: `
     <h3>Person Form</h3>
-    <div class="form">
-      <app-form-field *ngFor="let key of keys" [key]="key" [label]="configs[key].label" [errors]="configs[key].errors" [form]="form" />
+    <div class="form" [formGroup]="form">
+      <app-form-field *ngFor="let key of keys" [key]="key" [label]="configs[key].label" [errors]="configs[key].errors" />
     </div>
   `,
   styles: [`
