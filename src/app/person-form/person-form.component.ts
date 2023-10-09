@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormFieldComponent } from '../form-field/form-field.component';
 import { UserForm } from './interfaces/user-form.interface';
+import { Config } from '../form-field/interfaces/config.interface';
 
 @Component({
   selector: 'app-person-form',
@@ -12,7 +13,7 @@ import { UserForm } from './interfaces/user-form.interface';
   template: `
     <h3>Person Form</h3>
     <div class="form" [formGroup]="form">
-      <app-form-field *ngFor="let key of keys" [key]="key" [config]="configs[key]" />
+      <app-form-field *ngFor="let key of keys; trackBy: trackFunction" [key]="key" [config]="configs[key]" />
     </div>
   `,
   styles: [`
@@ -23,7 +24,7 @@ import { UserForm } from './interfaces/user-form.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PersonFormComponent {  
-  @Input()
+  @Input({ required: true })
   userForm!: UserForm;
 
   @Output()
@@ -37,7 +38,7 @@ export class PersonFormComponent {
     lastName: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   })
 
-  configs: Record<string, any> = {
+  configs: Record<string, Config> = {
     firstName: {
       label: "First Name: ",
       errors: [{ key: 'required', message: 'First name is required' }],
@@ -61,5 +62,9 @@ export class PersonFormComponent {
         this.userFormChange.emit(this.userForm);
         this.isPersonFormValid.emit(this.form.valid);
       });
+  }
+
+  trackFunction(index: number, key: string) {
+    return key;
   }
 }

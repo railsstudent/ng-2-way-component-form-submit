@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormFieldComponent } from '../form-field/form-field.component';
 import { AddressForm } from './interfaces/address-form.interface';
+import { Config } from '../form-field/interfaces/config.interface';
 
 @Component({
   selector: 'app-address-form',
@@ -27,7 +28,7 @@ import { AddressForm } from './interfaces/address-form.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddressFormComponent {
-  @Input()
+  @Input({ required: true })
   addressForm!: AddressForm;
 
   @Output()
@@ -36,7 +37,7 @@ export class AddressFormComponent {
   @Output()
   isAddressFormValid = new EventEmitter<boolean>();
 
-  configs: Record<string, any> = {
+  configs: Record<string, Config> = {
     streetOne: {
       label: "Street 1: ",
       errors: [{ key: 'required', message: 'Street 1 is required' }],
@@ -47,11 +48,17 @@ export class AddressFormComponent {
     },
     city: {
       label: "City: ",
-      errors: [{ key: 'required', message: 'City is required' }],
+      errors: [
+        { key: 'required', message: 'City is required' },
+        { key: 'minlength', message: 'City expects minimum 3 characters' }
+      ],
     },
     country: {
       label: "Country: ",
-      errors: [{ key: 'required', message: 'Country is required' }],
+      errors: [
+        { key: 'required', message: 'Country is required' },
+        { key: 'minlength', message: 'Country expects minimum 3 characters' }
+      ],
     }
   }
 
@@ -60,8 +67,8 @@ export class AddressFormComponent {
   form = new FormGroup({
     streetOne: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     streetTwo: new FormControl('', { nonNullable: true, validators: [Validators.required]}),
-    city: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    country: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    city: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(3)] }),
+    country: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(3)] }),
   });
 
   constructor() {

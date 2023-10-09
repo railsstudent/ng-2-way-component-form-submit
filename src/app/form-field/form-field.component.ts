@@ -1,6 +1,7 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component, Input, inject } from '@angular/core';
 import { FormGroupDirective, ReactiveFormsModule } from '@angular/forms';
+import { Config } from './interfaces/config.interface';
 
 @Component({
   selector: 'app-form-field',
@@ -18,7 +19,17 @@ import { FormGroupDirective, ReactiveFormsModule } from '@angular/forms';
         </ng-container>
       </label>
     </div>
-  `
+  `,
+  styles: [`
+    input {
+      padding: 0.25rem;
+      width: 300px;
+    }
+
+    .error {
+      color: red;
+    }
+  `],
 })
 export class FormFieldComponent {
   form = inject(FormGroupDirective).form;
@@ -27,5 +38,5 @@ export class FormFieldComponent {
   key!: string;
 
   @Input({ required: true })
-  config!: Record<string, any>;
+  config!: Config;
 }
