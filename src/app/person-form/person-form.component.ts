@@ -3,8 +3,8 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormFieldComponent } from '../form-field/form-field.component';
+import { USER_FORM_CONFIG } from './constants/user-form.config';
 import { UserForm } from './interfaces/user-form.interface';
-import { Config } from '../form-field/interfaces/config.interface';
 
 @Component({
   selector: 'app-person-form',
@@ -38,17 +38,7 @@ export class PersonFormComponent {
     lastName: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   })
 
-  configs: Record<string, Config> = {
-    firstName: {
-      label: "First Name: ",
-      errors: [{ key: 'required', message: 'First name is required' }],
-    },
-    lastName: {
-      label: "Last Name: ",
-      errors: [{ key: 'required', message: 'Last name is required' }],
-    },
-  }
-
+  configs = USER_FORM_CONFIG;
   keys = Object.keys(this.configs);
 
   constructor() {
