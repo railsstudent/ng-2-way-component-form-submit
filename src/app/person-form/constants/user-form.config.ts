@@ -9,4 +9,4 @@ export const USER_FORM_CONFIG: Record<string, Config> = {
       label: "Last Name: ",
       errors: [{ key: 'required', message: 'Last name is required' }],
     },
-  }
+}
